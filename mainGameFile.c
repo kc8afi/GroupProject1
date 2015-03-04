@@ -9,9 +9,9 @@ Group Project 1 - Maze
 #include <curses.h>
 #include <time.h>
 
-void PrintMaze(char array[][22], int rows, int cols);
+void PrintMaze(char array[][22], int rows, int cols, WINDOW *window);
 void StoreMaze(char array[][22], int rows, int cols, FILE *file);
-int MazeTraversal(char array[][22], int rows, int cols, int timeLimit);
+int MazeTraversal(char array[][22], int rows, int cols, int timeLimit, WINDOW *window);
 
 int main()
 {
@@ -72,24 +72,37 @@ int main()
 	initscr();
 	curs_set(0);
 	noecho();
-	keypad(stdscr, TRUE);
 	cbreak();
+
+	WINDOW* mazeWindow = NULL;
+	WINDOW* enemyWindow = NULL;
+	int screenHeight = getmaxy(stdscr);
+	int screenWidth = getmaxy(stdscr);
+	int windowWidth = screenWidth / 2;
+	mazeWindow = newwin(screenHeight, windowWidth, 0, 0);
+	enemyWindow = newwin(screenHeight, windowWidth, 0, windowWidth);
+	keypad(mazeWindow, TRUE);
+	wrefresh(stdscr);
 
 	//trying to set up a timer for the maze. once it works, set up a switch case for different time limits depending on which maze is being called
 	int timeLimit = 60;
 
-	int completionStatus = MazeTraversal(mazeOne, mazeRows, mazeCols, timeLimit);
+	int completionStatus = MazeTraversal(mazeOne, mazeRows, mazeCols, timeLimit, mazeWindow);
 	if (completionStatus != 0)
 	{
         	printw("You succeeded!\n");
 	}
 
+
 	getch();
+	delwin(mazeWindow);
+	delwin(enemyWindow);
 	endwin();
 	return 0;
+
 }
 
-void PrintMaze(char array[][22], int rows, int cols)
+void PrintMaze(char array[][22], int rows, int cols, WINDOW *window)
 {
 	int counter1 = 0;
 	while (counter1 < rows)
@@ -97,12 +110,13 @@ void PrintMaze(char array[][22], int rows, int cols)
 		int counter2 = 0;
 		while (counter2 < cols)
 		{
-			printf("%c", array[counter1][counter2]);
+			wprintw(window, "%c", array[counter1][counter2]);
 			counter2++;
 		}
 		counter1++;
 	}
-	printf("\n\n");
+	wprintw(window, "\n\n");
+	wrefresh(window);
 }
 
 void StoreMaze(char array[][22], int rows, int cols, FILE *file)
@@ -121,7 +135,7 @@ void StoreMaze(char array[][22], int rows, int cols, FILE *file)
 	}
 }
 
-int MazeTraversal(char array[][22], int rows, int cols, int timeLimit)
+int MazeTraversal(char array[][22], int rows, int cols, int timeLimit, WINDOW *window)
 {
 	//allow the user to traverse through the maze
 	int success = 0; //if zero, then the user failed. if nonzero, the user succeeded
@@ -157,10 +171,8 @@ int MazeTraversal(char array[][22], int rows, int cols, int timeLimit)
 	t = clock();
 	while (1)
 	{
-		clear();
-		refresh();
-		printw("Use the arrow keys to navigate the X through the maze\n");
-		PrintMaze(array, rows, cols);
+		wprintw(window, "Use the arrow keys to navigate the X through the maze\n");
+		PrintMaze(array, rows, cols, window);
 		int input = getch();
 		switch (input)
 		{
@@ -228,12 +240,14 @@ int MazeTraversal(char array[][22], int rows, int cols, int timeLimit)
 			if (curCol == endCol)
 			{
 				clear();
-				refresh();
-				PrintMaze(array, rows, cols);
-				printw("GAME OVER, YOU WIN!");
+				wrefresh(window);
+				PrintMaze(array, rows, cols, window);
+				wprintw(window, "GAME OVER, YOU WIN!");
 				break;
 			}
 		}
+		clear();
+		wrefresh(window);
 	}
 	t = clock() - t;
 	double timeTaken = ((double)t) / CLOCKS_PER_SEC;
