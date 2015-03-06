@@ -95,6 +95,9 @@ int main()
 		wprintw(mazeWindow, "You failed!\n");
 	}
 
+	wprintw(enemyWindow, "ENEMY HERE");
+	wrefresh(enemyWindow);
+
 	wgetch(mazeWindow);
 	delwin(mazeWindow);
 	delwin(enemyWindow);
