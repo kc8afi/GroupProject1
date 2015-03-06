@@ -1,7 +1,7 @@
 /*
-Austin Bower
+Austin Dhiraj Dave
 CS240
-Group Project 1 - Maze
+Group Project 1
 */
 
 #include <stdio.h>
