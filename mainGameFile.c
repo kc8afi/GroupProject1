@@ -78,23 +78,24 @@ int main()
 	WINDOW* enemyWindow = NULL;
 	int screenHeight = getmaxy(stdscr);
 	int screenWidth = getmaxy(stdscr);
-	int windowWidth = screenWidth / 2;
-	mazeWindow = newwin(screenHeight, windowWidth, 0, 0);
-	enemyWindow = newwin(screenHeight, windowWidth, 0, windowWidth);
+	mazeWindow = newwin(screenHeight, screenWidth, 0, 0);
+	enemyWindow = newwin(screenHeight, screenWidth, 0, screenWidth);
 	keypad(mazeWindow, TRUE);
 	wrefresh(stdscr);
 
 	//trying to set up a timer for the maze. once it works, set up a switch case for different time limits depending on which maze is being called
-	int timeLimit = 60;
-
+	int timeLimit = 20;
 	int completionStatus = MazeTraversal(mazeOne, mazeRows, mazeCols, timeLimit, mazeWindow);
 	if (completionStatus != 0)
 	{
-        	printw("You succeeded!\n");
+		wprintw(mazeWindow, "You succeeded!\n");
+	}
+	else
+	{
+		wprintw(mazeWindow, "You failed!\n");
 	}
 
-
-	getch();
+	wgetch(mazeWindow);
 	delwin(mazeWindow);
 	delwin(enemyWindow);
 	endwin();
@@ -167,13 +168,13 @@ int MazeTraversal(char array[][22], int rows, int cols, int timeLimit, WINDOW *w
 		counter1++;
 	}
 	//Run the loop that will contain the maze movement operations
-	clock_t t;
-	t = clock();
+	time_t startTime, endTime;
+	time(&startTime);
 	while (1)
 	{
-		wprintw(window, "Use the arrow keys to navigate the X through the maze\n");
+		mvwprintw(window, 0, 0, "Use the arrow keys to navigate the X through the maze\n");
 		PrintMaze(array, rows, cols, window);
-		int input = getch();
+		int input = wgetch(window);
 		switch (input)
 		{
 			case KEY_UP:
@@ -239,19 +240,18 @@ int MazeTraversal(char array[][22], int rows, int cols, int timeLimit, WINDOW *w
 		{
 			if (curCol == endCol)
 			{
-				clear();
+				wclear(window);
 				wrefresh(window);
 				PrintMaze(array, rows, cols, window);
-				wprintw(window, "GAME OVER, YOU WIN!");
 				break;
 			}
 		}
-		clear();
+		wclear(window);
 		wrefresh(window);
 	}
-	t = clock() - t;
-	double timeTaken = ((double)t) / CLOCKS_PER_SEC;
-	if (timeTaken <= timeLimit)
+	time(&endTime);
+	double totalTime = difftime(endTime, startTime);
+	if (totalTime <= timeLimit)
 	{
 		success = 1;
 	}
