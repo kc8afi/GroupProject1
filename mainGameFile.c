@@ -13,7 +13,7 @@ void PrintMaze(char array[][22], int rows, int cols, WINDOW *window);
 void StoreMaze(char array[][22], int rows, int cols, FILE *file);
 int MazeTraversal(char array[][22], int rows, int cols, int timeLimit, WINDOW *window);
 int Random(int Max);
-void dice_roll(WINDOW *diceWindow);
+void DiceRoll(WINDOW *diceWindow);
 
 int main()
 {
@@ -102,7 +102,8 @@ int main()
 	wrefresh(enemyWindow);
 	dice_roll(diceWindow);
 	wrefresh(enemyWindow);
-    wrefresh(diceWindow);
+	wrefresh(diceWindow);
+
 	wgetch(mazeWindow);
 	delwin(mazeWindow);
 	delwin(enemyWindow);
@@ -267,21 +268,19 @@ int MazeTraversal(char array[][22], int rows, int cols, int timeLimit, WINDOW *w
 	return success;
 }
 
-
-
- int Random(int Max)
- {
-
-     return ( rand() % Max)+ 1;
-}
-void dice_roll(WINDOW *diceWindow)
+int Random(int Max)
 {
-    wprintw(diceWindow,"Rolling 3 Dice\n") ;
-    srand( time( NULL ) ) ;
-    int d1=Random(6) ;
-    int d2=Random(6) ;
-    int d3=Random(6) ;
-    int total=d1+d2+d3;
+	return ( rand() % Max)+ 1;
+}
+
+void DiceRoll(WINDOW *diceWindow)
+{
+	wprintw(diceWindow,"Rolling 3 Dice\n") ;
+	srand( time( NULL ) ) ;
+	int d1=Random(6) ;
+	int d2=Random(6) ;
+	int d3=Random(6) ;
+	int total=d1+d2+d3;
 
         wprintw(diceWindow,"DIE1  DIE2  DIE3  TOTAL\n");
         wprintw(diceWindow," %d  +  %d  +  %d  =  %d",d1,d2,d3,total);
