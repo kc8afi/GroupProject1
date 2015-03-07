@@ -12,6 +12,8 @@ Group Project 1
 void PrintMaze(char array[][22], int rows, int cols, WINDOW *window);
 void StoreMaze(char array[][22], int rows, int cols, FILE *file);
 int MazeTraversal(char array[][22], int rows, int cols, int timeLimit, WINDOW *window);
+int Random(int Max);
+void dice_roll(WINDOW *diceWindow);
 
 int main()
 {
@@ -30,43 +32,43 @@ int main()
 
 	FILE *file3 = fopen("maze3.txt", "r");
 	char mazeThree[mazeRows][mazeCols];
-	StoreMaze(mazeThree, mazeRows, mazeCols, file2);
-	fclose(file2);
+	StoreMaze(mazeThree, mazeRows, mazeCols, file3);
+	fclose(file3);
 
 	FILE *file4 = fopen("maze4.txt", "r");
 	char mazeFour[mazeRows][mazeCols];
-	StoreMaze(mazeFour, mazeRows, mazeCols, file2);
-	fclose(file2);
+	StoreMaze(mazeFour, mazeRows, mazeCols, file4);
+	fclose(file4);
 
 	FILE *file5 = fopen("maze5.txt", "r");
 	char mazeFive[mazeRows][mazeCols];
-	StoreMaze(mazeFive, mazeRows, mazeCols, file2);
-	fclose(file2);
+	StoreMaze(mazeFive, mazeRows, mazeCols, file5);
+	fclose(file5);
 
 	FILE *file6 = fopen("maze6.txt", "r");
 	char mazeSix[mazeRows][mazeCols];
-	StoreMaze(mazeSix, mazeRows, mazeCols, file2);
-	fclose(file2);
+	StoreMaze(mazeSix, mazeRows, mazeCols, file6);
+	fclose(file6);
 
 	FILE *file7 = fopen("maze7.txt", "r");
 	char mazeSeven[mazeRows][mazeCols];
-	StoreMaze(mazeSeven, mazeRows, mazeCols, file2);
-	fclose(file2);
+	StoreMaze(mazeSeven, mazeRows, mazeCols, file7);
+	fclose(file7);
 
 	FILE *file8 = fopen("maze8.txt", "r");
 	char mazeEight[mazeRows][mazeCols];
-	StoreMaze(mazeEight, mazeRows, mazeCols, file2);
-	fclose(file2);
+	StoreMaze(mazeEight, mazeRows, mazeCols, file8);
+	fclose(file8);
 
 	FILE *file9 = fopen("maze9.txt", "r");
 	char mazeNine[mazeRows][mazeCols];
-	StoreMaze(mazeNine, mazeRows, mazeCols, file2);
-	fclose(file2);
+	StoreMaze(mazeNine, mazeRows, mazeCols, file9);
+	fclose(file9);
 
 	FILE *file10 = fopen("maze10.txt", "r");
 	char mazeTen[mazeRows][mazeCols];
-	StoreMaze(mazeTen, mazeRows, mazeCols, file2);
-	fclose(file2);
+	StoreMaze(mazeTen, mazeRows, mazeCols, file10);
+	fclose(file10);
 
 	//Initialize the screen, set the cursor to invisible, auto return values with getch, allow special characters, and don't show keyboard input
 	initscr();
@@ -76,10 +78,12 @@ int main()
 
 	WINDOW* mazeWindow = NULL;
 	WINDOW* enemyWindow = NULL;
+	WINDOW* diceWindow = NULL;
 	int screenHeight = getmaxy(stdscr);
 	int screenWidth = getmaxy(stdscr);
 	mazeWindow = newwin(screenHeight, screenWidth, 0, 0);
 	enemyWindow = newwin(screenHeight, screenWidth, 0, screenWidth);
+	diceWindow = newwin(screenHeight, screenWidth, 0,0);
 	keypad(mazeWindow, TRUE);
 	wrefresh(stdscr);
 
@@ -94,13 +98,15 @@ int main()
 	{
 		wprintw(mazeWindow, "You failed!\n");
 	}
-
 	wprintw(enemyWindow, "ENEMY HERE");
 	wrefresh(enemyWindow);
-
+	dice_roll(diceWindow);
+	wrefresh(enemyWindow);
+    wrefresh(diceWindow);
 	wgetch(mazeWindow);
 	delwin(mazeWindow);
 	delwin(enemyWindow);
+	delwin(diceWindow);
 	endwin();
 	return 0;
 
@@ -260,3 +266,36 @@ int MazeTraversal(char array[][22], int rows, int cols, int timeLimit, WINDOW *w
 	}
 	return success;
 }
+
+
+
+ int Random(int Max)
+ {
+
+     return ( rand() % Max)+ 1;
+}
+void dice_roll(WINDOW *diceWindow)
+{
+    wprintw(diceWindow,"Rolling 3 Dice\n") ;
+    srand( time( NULL ) ) ;
+    int d1=Random(6) ;
+    int d2=Random(6) ;
+    int d3=Random(6) ;
+    int total=d1+d2+d3;
+
+        wprintw(diceWindow,"DIE1  DIE2  DIE3  TOTAL\n");
+        wprintw(diceWindow," %d  +  %d  +  %d  =  %d",d1,d2,d3,total);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
