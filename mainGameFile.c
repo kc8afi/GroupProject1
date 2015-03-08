@@ -21,8 +21,8 @@ void StoreMaze(char array[][22], int rows, int cols, FILE *file);
 void PrintEnemy(struct Enemy in, int rows, int cols, WINDOW *window);
 void StoreEnemy(struct Enemy* in, int rows, int cols, FILE *file);
 int MazeTraversal(char array[][22], int rows, int cols, int timeLimit, WINDOW *window);
-int Random(int Max);
-void DiceRoll(WINDOW *enemyWindow,struct Enemy in);
+int Random();
+int DiceRoll(WINDOW *window,struct Enemy in);
 
 int main()
 {
@@ -130,7 +130,7 @@ int main()
 	wrefresh(stdscr);
 
 	//trying to set up a timer for the maze. once it works, set up a switch case for different time limits depending on which maze is being called
-	int timeLimit = 20;
+	int timeLimit = 40;
 	int completionStatus = MazeTraversal(mazeOne, mazeRows, mazeCols, timeLimit, mazeWindow);
 	if (completionStatus != 0)
 	{
@@ -141,9 +141,9 @@ int main()
 		wprintw(mazeWindow, "You failed!\n");
 	}
 
-	PrintEnemy(enemyNine, enemyRows, enemyCols, enemyWindow);
+	PrintEnemy(enemyOne, enemyRows, enemyCols, enemyWindow);
 	wrefresh(enemyWindow);
-	DiceRoll(enemyWindow, enemyNine);
+	DiceRoll(enemyWindow, enemyOne);
 	wrefresh(enemyWindow);
 	wgetch(mazeWindow);
 	delwin(mazeWindow);
@@ -155,6 +155,7 @@ int main()
 
 void PrintMaze(char array[][22], int rows, int cols, WINDOW *window)
 {
+	//simply go through the 2d array one element at a time and print that element to a window
 	int counter1 = 0;
 	while (counter1 < rows)
 	{
@@ -269,7 +270,7 @@ int MazeTraversal(char array[][22], int rows, int cols, int timeLimit, WINDOW *w
 		mvwprintw(window, 0, 0, "Use the arrow keys to navigate the X through the maze\n");
 		PrintMaze(array, rows, cols, window);
 		int input = wgetch(window);
-		switch (input)
+		switch (input) //use a switch case to check if arrow keys have been input for movement
 		{
 			case KEY_UP:
 				if (curRow > 1)
@@ -334,6 +335,7 @@ int MazeTraversal(char array[][22], int rows, int cols, int timeLimit, WINDOW *w
 		{
 			if (curCol == endCol)
 			{
+				//if the user has completed progression, break out of traversal loop
 				wclear(window);
 				wrefresh(window);
 				PrintMaze(array, rows, cols, window);
@@ -352,27 +354,34 @@ int MazeTraversal(char array[][22], int rows, int cols, int timeLimit, WINDOW *w
 	return success;
 }
 
-int Random(int Max)
+int Random()
 {
-	return ( rand() % Max)+ 1;
+	//calculate a random int from 1-6 to use for dice rolls
+	int max = 6;
+	return ( rand() % max)+ 1;
 }
 
-void DiceRoll(WINDOW *enemyWindow,struct Enemy in)
+int DiceRoll(WINDOW *window,struct Enemy in)
 {
-	wprintw(enemyWindow,"Rolling 3 Dice\n") ;
+	//set up 3 int values to store dice rolls. print the values and compare the total to the enemy power to see if they won
+	int success = 0;
+	wprintw(window,"Rolling 3 Dice\n") ;
 	srand( time( NULL ) ) ;
-	int d1=Random(6) ;
-	int d2=Random(6) ;
-	int d3=Random(6) ;
-	int total=d1+d2+d3;
-        wprintw(enemyWindow,"DIE1  DIE2  DIE3  TOTAL\n");
-        wprintw(enemyWindow," %d  +  %d  +  %d  =  %d",d1,d2,d3,total);
-	 if (total<in.power)
-        {
-            wprintw(enemyWindow,"\nYou lost\n");
-        }
-        else if(total>in.power)
-        {
-             wprintw(enemyWindow,"\nYou win\n");
-        }
+	int d1 = Random();
+	int d2 = Random();
+	int d3 = Random();
+	int total = d1 + d2 + d3;
+	wprintw(window,"DIE1  DIE2  DIE3  TOTAL\n");
+	wprintw(window, " %d  +  %d  +  %d  =  %d", d1, d2, d3, total);
+	if (total >= in.power)
+	{
+		success = 1;
+		wprintw(window,"\nYou won!\n");
+	}
+	else
+	{
+		success = 0;
+		wprintw(window, "\nYou lost!\n");
+	}
+	return success;
 }
