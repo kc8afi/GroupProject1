@@ -22,7 +22,7 @@ void PrintEnemy(struct Enemy in, int rows, int cols, WINDOW *window);
 void StoreEnemy(struct Enemy* in, int rows, int cols, FILE *file);
 int MazeTraversal(char array[][22], int rows, int cols, int timeLimit, WINDOW *window);
 int Random(int Max);
-void DiceRoll(WINDOW *diceWindow);
+void DiceRoll(WINDOW *enemyWindow,struct Enemy in);
 
 int main()
 {
@@ -122,12 +122,10 @@ int main()
 
 	WINDOW* mazeWindow = NULL;
 	WINDOW* enemyWindow = NULL;
-	WINDOW* diceWindow = NULL;
 	int screenHeight = getmaxy(stdscr);
 	int screenWidth = getmaxy(stdscr);
 	mazeWindow = newwin(screenHeight, screenWidth, 0, 0);
 	enemyWindow = newwin(screenHeight, screenWidth, 0, screenWidth);
-	diceWindow = newwin(screenHeight, screenWidth, 0,0);
 	keypad(mazeWindow, TRUE);
 	wrefresh(stdscr);
 
@@ -145,15 +143,11 @@ int main()
 
 	PrintEnemy(enemyNine, enemyRows, enemyCols, enemyWindow);
 	wrefresh(enemyWindow);
-
-	DiceRoll(diceWindow);
+	DiceRoll(enemyWindow, enemyNine);
 	wrefresh(enemyWindow);
-	wrefresh(diceWindow);
-
 	wgetch(mazeWindow);
 	delwin(mazeWindow);
 	delwin(enemyWindow);
-	delwin(diceWindow);
 	endwin();
 	return 0;
 
@@ -363,28 +357,22 @@ int Random(int Max)
 	return ( rand() % Max)+ 1;
 }
 
-void DiceRoll(WINDOW *diceWindow)
+void DiceRoll(WINDOW *enemyWindow,struct Enemy in)
 {
-	wprintw(diceWindow,"Rolling 3 Dice\n") ;
+	wprintw(enemyWindow,"Rolling 3 Dice\n") ;
 	srand( time( NULL ) ) ;
 	int d1=Random(6) ;
 	int d2=Random(6) ;
 	int d3=Random(6) ;
 	int total=d1+d2+d3;
-
-        wprintw(diceWindow,"DIE1  DIE2  DIE3  TOTAL\n");
-        wprintw(diceWindow," %d  +  %d  +  %d  =  %d",d1,d2,d3,total);
+        wprintw(enemyWindow,"DIE1  DIE2  DIE3  TOTAL\n");
+        wprintw(enemyWindow," %d  +  %d  +  %d  =  %d",d1,d2,d3,total);
+	 if (total<in.power)
+        {
+            wprintw(enemyWindow,"\nYou lost\n");
+        }
+        else if(total>in.power)
+        {
+             wprintw(enemyWindow,"\nYou win\n");
+        }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
