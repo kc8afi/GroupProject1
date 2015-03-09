@@ -22,7 +22,10 @@ void PrintEnemy(struct Enemy in, int rows, int cols, WINDOW *window);
 void StoreEnemy(struct Enemy* in, int rows, int cols, FILE *file);
 int MazeTraversal(char array[][22], int rows, int cols, int timeLimit, WINDOW *window);
 int Random();
-int DiceRoll(WINDOW *window,struct Enemy in);
+int DiceRoll(WINDOW *window, struct Enemy in);
+void StartMenu(WINDOW *window);
+int MazeCall(WINDOW *mazeWindow, int mazeRows, int mazeCols, int timeLimit[10], int userLevel, char mazeOne[][22], char mazeTwo[][22], char mazeThree[][22], char mazeFour[][22], char mazeFive[][22], char mazeSix[][22], char mazeSeven[][22], char mazeEight[][22], char mazeNine[][22], char mazeTen[][22]);
+
 
 int main()
 {
@@ -128,23 +131,22 @@ int main()
 	enemyWindow = newwin(screenHeight, screenWidth, 0, screenWidth);
 	keypad(mazeWindow, TRUE);
 	wrefresh(stdscr);
-
-	//trying to set up a timer for the maze. once it works, set up a switch case for different time limits depending on which maze is being called
-	int timeLimit = 40;
-	int completionStatus = MazeTraversal(mazeOne, mazeRows, mazeCols, timeLimit, mazeWindow);
-	if (completionStatus != 0)
+	StartMenu(mazeWindow);
+	//Start main game loop
+	int userLevel = 1;
+	int timeLimit[10] = {20, 20, 20, 20, 20, 20, 20, 20, 20, 20};
+	int success = MazeCall(mazeWindow, mazeRows, mazeCols, timeLimit, userLevel, mazeOne, mazeTwo, mazeThree, mazeFour, mazeFive, mazeSix, mazeSeven, mazeEight, mazeNine, mazeTen);
+	if (success != 0)
 	{
-		wprintw(mazeWindow, "You succeeded!\n");
+		wprintw(mazeWindow, "You Win!");
 	}
 	else
 	{
-		wprintw(mazeWindow, "You failed!\n");
+		wprintw(mazeWindow, "You Lose!");
 	}
 
 	PrintEnemy(enemyOne, enemyRows, enemyCols, enemyWindow);
-	wrefresh(enemyWindow);
 	DiceRoll(enemyWindow, enemyOne);
-	wrefresh(enemyWindow);
 	wgetch(mazeWindow);
 	delwin(mazeWindow);
 	delwin(enemyWindow);
@@ -209,6 +211,7 @@ void PrintEnemy(struct Enemy in, int rows, int cols, WINDOW *window)
 		}
 		counter1++;
 	}
+	wrefresh(window);
 	wprintw(window, "\n\n");
 }
 
@@ -383,5 +386,70 @@ int DiceRoll(WINDOW *window,struct Enemy in)
 		success = 0;
 		wprintw(window, "\nYou lost!\n");
 	}
+	wrefresh(window);
 	return success;
+}
+
+void StartMenu(WINDOW *window)
+{
+	//run an infinite loop to display the start menu until the user wants to start the game
+	while (1)
+	{
+		wprintw(window, "    MAZES AND MEN\n\nStart Game (press 's')\nInstructions (press 'i')\n\n");
+		int input = wgetch(window);
+		if (input == 's')
+		{
+			break;
+		}
+		else if (input == 'i')
+		{
+			wclear(window);
+			wrefresh(window);
+			wprintw(window, "This is Mazes and Men. The goal is to\ntraverse through all ten mazes and then defeat\nall ten men. To traverse through the mazes you\nuse the arrow keys to navigate. Each subsequent\nmaze will have less time available for you to\ncomplete it successfully. When fighting the men\nyou will roll three dice and if the sum of your\nrolls is greater than the or equal to the\nenemy's power then you will win and progress\nto the next level.\n\nPress any key to return to the main menu.");
+			wgetch(window);
+		}
+		wclear(window);
+		wrefresh(window);
+	}
+}
+
+int MazeCall(WINDOW *mazeWindow, int mazeRows, int mazeCols, int timeLimit[], int userLevel, char mazeOne[][22], char mazeTwo[][22], char mazeThree[][22], char mazeFour[][22], char mazeFive[][22], char mazeSix[][22], char mazeSeven[][22], char mazeEight[][22], char mazeNine[][22], char mazeTen[][22])
+{
+	int completionStatus = 0;
+	switch (userLevel)
+	{
+		case 1:
+			completionStatus = MazeTraversal(mazeOne, mazeRows, mazeCols, timeLimit[userLevel -1], mazeWindow);
+			break;
+		case 2:
+			completionStatus = MazeTraversal(mazeTwo, mazeRows, mazeCols, timeLimit[userLevel - 1], mazeWindow);
+			break;
+		case 3:
+			completionStatus = MazeTraversal(mazeThree, mazeRows, mazeCols, timeLimit[userLevel - 1], mazeWindow);
+			break;
+		case 4:
+			completionStatus = MazeTraversal(mazeFour, mazeRows, mazeCols, timeLimit[userLevel - 1], mazeWindow);
+			break;
+		case 5:
+			completionStatus = MazeTraversal(mazeFive, mazeRows, mazeCols, timeLimit[userLevel - 1], mazeWindow);
+			break;
+		case 6:
+			completionStatus = MazeTraversal(mazeSix, mazeRows, mazeCols, timeLimit[userLevel - 1], mazeWindow);
+			break;
+		case 7:
+			completionStatus = MazeTraversal(mazeSeven, mazeRows, mazeCols, timeLimit[userLevel - 1], mazeWindow);
+			break;
+		case 8:
+			completionStatus = MazeTraversal(mazeEight, mazeRows, mazeCols, timeLimit[userLevel - 1], mazeWindow);
+			break;
+		case 9:
+			completionStatus = MazeTraversal(mazeNine, mazeRows, mazeCols, timeLimit[userLevel - 1], mazeWindow);
+			break;
+		case 10:
+			completionStatus = MazeTraversal(mazeTen, mazeRows, mazeCols, timeLimit[userLevel - 1], mazeWindow);
+			break;
+		default:
+			break;
+	}
+	return completionStatus;
 }
