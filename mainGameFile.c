@@ -134,10 +134,11 @@ int main()
 	StartMenu(mazeWindow);
 	//Start main game loop
 	int userLevel = 1;
-	int timeLimit[10] = {50, 47, 44, 41, 38, 35, 32, 29, 26, 23};
+	int timeLimit[10] = {50, 47, 44, 41, 38, 35, 32, 29, 26, 23};//Array to hold the time limit to mac=vigate the maze
 	int success = 0;
 	while (1)
 	{
+		//Main Game Loop
 		success = MazeCall(mazeWindow, mazeRows, mazeCols, timeLimit, userLevel, mazeOne, mazeTwo, mazeThree, mazeFour, mazeFive, mazeSix, mazeSeven, mazeEight, mazeNine, mazeTen);
 		if (success != 0)
 		{
@@ -204,7 +205,6 @@ int main()
 	return 0;
 
 }
-
 void PrintMaze(char array[][22], int rows, int cols, WINDOW *window)
 {
 	//simply go through the 2d array one element at a time and print that element to a window
